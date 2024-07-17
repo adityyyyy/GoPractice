@@ -13,8 +13,10 @@ type Page struct {
 	Body  []byte
 }
 
-var templates = template.Must(template.ParseFiles("edit.html", "view.html"))
-var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
+var (
+	templates = template.Must(template.ParseFiles("edit.html", "view.html"))
+	validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
+)
 
 func main() {
 	http.HandleFunc("/view/", makeHandler(viewHandler))
@@ -25,7 +27,6 @@ func main() {
 
 func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		m := validPath.FindStringSubmatch(r.URL.Path)
 
 		if m == nil {
@@ -53,7 +54,6 @@ func (p *Page) save() error {
 func loadPage(title string) (*Page, error) {
 	filename := title + ".txt"
 	body, err := os.ReadFile(filename)
-
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,6 @@ func loadPage(title string) (*Page, error) {
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
-
 	p, err := loadPage(title)
 	if err != nil {
 		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
